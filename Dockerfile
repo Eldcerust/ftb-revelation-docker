@@ -3,6 +3,8 @@ FROM adoptopenjdk/openjdk8:alpine
 # NOTE ca-certificates:
 # https://hackernoon.com/alpine-docker-image-with-secured-communication-ssl-tls-go-restful-api-128eb6b54f1f
 
+RUN apk upgrade && apk add wget
+
 RUN mkdir -p /home/ftb && cd /home/ftb
 
 # change directory to /home/ftb
@@ -26,7 +28,6 @@ RUN echo 'export MIN_RAM="4096M"' >> settings.sh && \
 
 # clear out mods which we are upgrading
 WORKDIR /home/ftb/mods
-RUN rm mcjtylib* && rm rftools-*
 
 # upgrade mods
 RUN wget -q https://ftb-mod-lists.herokuapp.com/ -O mods.txt && \
