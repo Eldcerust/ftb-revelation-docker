@@ -5,17 +5,13 @@ FROM adoptopenjdk/openjdk8:alpine
 RUN apk update && \
     apk add ca-certificates wget openssh
 
-RUN rc-update add sshd && /etc/init.d/sshd start
-
-RUN echo "putpasswordhere" | passwd --stdin root 
-
 RUN mkdir -p /home/ftb && cd /home/ftb
 
 # change directory to /home/ftb
 WORKDIR /home/ftb
 
 # download FTB Revelations server pack (latest)
-RUN wget -q http://ftb-zawarudo-build.herokuapp.com -O url.txt && \
+RUN wget -q http://ftb-latest-url.herokuapp.com -O url.txt && \
     wget -q -i url.txt -O server.zip && \
     unzip server.zip && rm server.zip
 
@@ -33,10 +29,15 @@ RUN echo 'export MIN_RAM="2048M"' >> settings.sh && \
 
 # clear out mods which we are upgrading
 WORKDIR /home/ftb/mods
-RUN rm mcjtylib* && rm rftools-*
+# RUN rm mcjtylib* && rm rftools-*  # deleting rftools NOT needed for Direwolf20, we are not upgrading their versions
+# RUN rm mcjtylib*
+
+# change AppliedEnergistics2 to not conflict with magic mod
+WORKDIR /home/ftb/config/AppliedEnergistics2
+RUN sed 's/storageDimensionID=2/storageDimensionID=99/g' AppliedEnergistics2.cfg
 
 # upgrade mods
-RUN wget -q http://ftb-zawarudo-build.herokuapp.com/mods -O mods.txt && \
+RUN wget -q http://ftb-latest-url.herokuapp.com/mods -O mods.txt && \
     wget -q -i mods.txt
 
 WORKDIR /home/ftb
